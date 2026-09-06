@@ -198,7 +198,7 @@ tr:hover td { background-color: #f1f5f9; }
 .viewer-study-meta { font-size: 12px; color: #888; margin-top: 2px; }
 .viewer-body { flex: 1; display: flex; min-height: 0; }
 .viewer-canvas { flex: 1; background: #050505; display: flex; align-items: center; justify-content: center; position: relative; }
-.mock-scan { border: 1px solid #222; width: 85%; height: 85%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); box-shadow: 0 0 40px rgba(0,0,0,0.8) inset; border-radius: 4px; }
+.mock-scan { position: relative; border: 1px solid #222; width: 85%; height: 85%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); box-shadow: 0 0 40px rgba(0,0,0,0.8) inset; border-radius: 4px; }
 .scan-overlay-text { position: absolute; font-family: 'SF Mono', Consolas, monospace; font-size: 12px; color: #4ade80; text-shadow: 1px 1px 2px #000; }
 .viewer-panel { width: 400px; background: #111; border-left: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
 .viewer-panel-header { padding: 16px 20px; border-bottom: 1px solid #333; background: #1a1a1a; font-size: 14px; font-weight: 600; color: #e2e8f0; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -249,3 +249,9 @@ tr:hover td { background-color: #f1f5f9; }
 /* Explicit Input Height Fix */
 .form-input, .form-select { height: 40px; }
 .form-textarea { min-height: 100px; padding-top: 10px; padding-bottom: 10px; }
+
+
+.scan-tl { top: 20px; left: 20px; }
+.scan-tr { top: 20px; right: 20px; text-align: right; }
+.scan-bl { bottom: 20px; left: 20px; }
+.scan-br { bottom: 20px; right: 20px; text-align: right; }

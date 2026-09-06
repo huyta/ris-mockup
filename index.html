@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HealthSys RIS – Complete System Mockup</title>
+    <title>HealthSys RIS Workspace</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -11,43 +11,83 @@
         <!-- ── Sidebar ────────────────────────────────────────── -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>🏥 HealthSys RIS</h2>
-                <span class="version">v2.1 Interactive Mockup</span>
+                <h2>⚕️ HealthSys RIS</h2>
+                <span class="version">Enterprise v2.1</span>
             </div>
             <nav class="sidebar-nav">
-                <a href="#" onclick="navigate('dashboard');return false;" id="nav-dashboard" class="active">📊 Dashboard</a>
-                <a href="#" onclick="navigate('patients');return false;" id="nav-patients">👤 Patient Registry</a>
-                <a href="#" onclick="navigate('orders');return false;" id="nav-orders">📋 Radiology Orders</a>
-                <a href="#" onclick="navigate('scheduling');return false;" id="nav-scheduling">📅 Scheduling</a>
-                <a href="#" onclick="navigate('tech-worklist');return false;" id="nav-tech-worklist">🔧 Tech Worklist (MWL)</a>
-                <a href="#" onclick="navigate('rad-worklist');return false;" id="nav-rad-worklist">🩺 Rad Worklist</a>
-                <a href="#" onclick="navigate('dispatch');return false;" id="nav-dispatch">🔗 Dispatch &amp; Interop</a>
-                <a href="#" onclick="navigate('flow-viz');return false;" id="nav-flow-viz">🗺️ System Flow</a>
-                <a href="#" onclick="navigate('scenarios');return false;" id="nav-scenarios">🎬 Demo Scenarios</a>
+                <a href="#" onclick="navigate('dashboard');return false;" id="nav-dashboard" class="active">
+                    <span style="width:20px;text-align:center;">📊</span> System Dashboard
+                </a>
+                <a href="#" onclick="navigate('patients');return false;" id="nav-patients">
+                    <span style="width:20px;text-align:center;">👤</span> Patient Registry
+                </a>
+                <a href="#" onclick="navigate('orders');return false;" id="nav-orders">
+                    <span style="width:20px;text-align:center;">📋</span> Radiology Orders
+                </a>
+                <a href="#" onclick="navigate('scheduling');return false;" id="nav-scheduling">
+                    <span style="width:20px;text-align:center;">📅</span> Scheduling Center
+                </a>
+                <a href="#" onclick="navigate('tech-worklist');return false;" id="nav-tech-worklist">
+                    <span style="width:20px;text-align:center;">🔧</span> Modality Worklist
+                </a>
+                <a href="#" onclick="navigate('rad-worklist');return false;" id="nav-rad-worklist">
+                    <span style="width:20px;text-align:center;">🩺</span> Diagnostic Reading
+                </a>
+                <a href="#" onclick="navigate('dispatch');return false;" id="nav-dispatch">
+                    <span style="width:20px;text-align:center;">🔗</span> Interop &amp; Dispatch
+                </a>
+                <div style="margin: 16px 0 8px 16px; font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">System &amp; Demo</div>
+                <a href="#" onclick="navigate('flow-viz');return false;" id="nav-flow-viz">
+                    <span style="width:20px;text-align:center;">🗺️</span> Architecture Flow
+                </a>
+                <a href="#" onclick="navigate('scenarios');return false;" id="nav-scenarios">
+                    <span style="width:20px;text-align:center;">🎬</span> Demo Scenarios
+                </a>
             </nav>
-            <div style="margin-top:auto; padding:15px 20px; border-top:1px solid #334155; font-size:0.8rem; color:#64748b;">
-                Role: <strong id="current-role" style="color:#cbd5e1;">System Admin</strong>
+            <div class="sidebar-footer">
+                <div>User: <strong id="current-user" style="color:#e2e8f0;">Dr. J. Wilson</strong></div>
+                <div style="margin-top:4px;">Role: <span style="color:#cbd5e1;">Attending Rad</span></div>
+                <div style="margin-top:4px;">Dept: <span style="color:#cbd5e1;">Neuroradiology</span></div>
             </div>
         </aside>
 
         <!-- ── Main Content ───────────────────────────────────── -->
         <main class="main-content">
+            <!-- Global Header -->
             <header class="top-header">
-                <div>
-                    <div id="breadcrumb-area"></div>
+                <div class="header-left">
                     <h1 id="page-title">Dashboard</h1>
+                    <div id="breadcrumb-area" style="margin-left: 16px; padding-left: 16px; border-left: 1px solid var(--border-light);"></div>
                 </div>
-                <div class="user-info" style="display:flex;align-items:center;gap:15px;">
-                    <span class="text-sm text-muted">Dr. James Wilson (Neuroradiology)</span>
+                <div class="header-right">
+                    <span>Facility: <strong>Main Hospital</strong></span>
+                    <button class="btn btn-outline btn-sm">Sign Out</button>
                 </div>
             </header>
 
+            <!-- Sticky Patient Context Banner (Hidden by default, shown via JS if active patient) -->
+            <div id="global-patient-banner" class="patient-context-banner">
+                <div class="pt-banner-primary">
+                    <span class="pt-banner-name" id="pt-banner-name">No Active Patient</span>
+                    <span class="badge badge-routine" id="pt-banner-mrn">MRN: ---</span>
+                    <span id="pt-banner-dob">DOB: ---</span>
+                </div>
+                <div class="pt-banner-alert" id="pt-banner-alert">
+                    ⚠️ Allergies: None Recorded
+                </div>
+                <div class="pt-banner-secondary">
+                    <span id="pt-banner-enc">Enc: ---</span>
+                    <span id="pt-banner-loc">Loc: ---</span>
+                </div>
+            </div>
+
+            <!-- Scrollable Content -->
             <div class="content-body" id="view-container">
                 <!-- Page views are rendered here by app.js -->
                 <div class="empty-state">
                     <div class="empty-state-icon">⏳</div>
-                    <h3>Loading...</h3>
-                    <p>Initializing mock data and views.</p>
+                    <h3>Initializing Workspace...</h3>
+                    <p>Loading clinical data and mock state.</p>
                 </div>
             </div>
         </main>
@@ -56,45 +96,49 @@
     <!-- ── PACS Viewer Fullscreen Overlay ─────────────────── -->
     <div id="viewer-overlay" class="viewer-overlay">
         <div class="viewer-toolbar">
-            <div>
-                <strong id="viewer-patient-info">Patient | Accession | Procedure</strong>
-                <div class="text-sm" style="color:#94a3b8;" id="viewer-study-info">Study UID</div>
+            <div class="viewer-toolbar-title">
+                <div class="viewer-pt-name" id="viewer-patient-info">PATIENT NAME | MRN</div>
+                <div class="viewer-study-meta" id="viewer-study-info">ACCESSION | UID</div>
             </div>
             <div class="btn-group">
-                <button class="btn btn-outline" style="color:#eee;border-color:#555;" onclick="UI.toast('Window/Level: W:400 L:40', 'info')">W/L</button>
-                <button class="btn btn-outline" style="color:#eee;border-color:#555;" onclick="UI.toast('Zoom: 1.0x', 'info')">Zoom</button>
-                <button class="btn btn-outline" style="color:#eee;border-color:#555;" onclick="UI.toast('Measurements tool activated', 'info')">Measure</button>
-                <button class="btn btn-danger" onclick="closePacsViewer()">✕ Close Viewer</button>
+                <button class="btn btn-sm btn-outline" style="color:#eee;border-color:#444;" onclick="UI.toast('W/L set to Soft Tissue', 'info')">W:400 L:40</button>
+                <button class="btn btn-sm btn-outline" style="color:#eee;border-color:#444;" onclick="UI.toast('Zoom reset', 'info')">1.0x</button>
+                <button class="btn btn-sm btn-outline" style="color:#eee;border-color:#444;" onclick="UI.toast('Measurement tool active', 'info')">📏 Measure</button>
+                <button class="btn btn-sm btn-danger" onclick="closePacsViewer()">✕ Close</button>
             </div>
         </div>
         <div class="viewer-body">
             <div class="viewer-canvas">
                 <div class="mock-scan">
+                    <div class="scan-overlay-text scan-tl">Se: 4<br>Im: 42/186</div>
+                    <div class="scan-overlay-text scan-tr">Institution: General<br>Scanner: MAG Vida</div>
+                    <div class="scan-overlay-text scan-bl">T2_TSE_TRA</div>
+                    <div class="scan-overlay-text scan-br">W: 400 L: 40</div>
                     <div style="text-align:center;">
-                        <div style="font-size:4rem;margin-bottom:20px;">🧠</div>
-                        <div style="font-size:1.2rem;color:#888;">Simulated DICOM Image Render</div>
-                        <div style="font-size:0.85rem;color:#555;margin-top:10px;">Series 1/4 · Image 42/186 · Axial T2</div>
-                        <div style="font-size:0.75rem;color:#444;margin-top:8px;">Window: 400 · Level: 40 · Zoom: 1.0x</div>
+                        <div style="font-size:8rem;margin-bottom:12px;filter:grayscale(1) brightness(0.8);">🧠</div>
+                        <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;">Simulated DICOM Viewport</div>
                     </div>
                 </div>
             </div>
             <div class="viewer-panel">
-                <h3>📝 Diagnostic Report</h3>
-                <div>
-                    <label style="font-size:0.8rem;color:#94a3b8;">Clinical History</label>
-                    <div style="font-size:0.85rem;color:#e2e8f0;padding:8px;background:#1a1a1a;border-radius:4px;margin-top:4px;" id="viewer-clinical-history">Loading...</div>
+                <div class="viewer-panel-header">📝 Diagnostic Report Editor</div>
+                <div class="viewer-panel-content">
+                    <div class="form-group mb-0">
+                        <label class="form-label">Clinical Indication</label>
+                        <div style="font-size:12px;color:#cbd5e1;padding:8px;background:#0f0f0f;border-radius:2px;border:1px solid #333;" id="viewer-clinical-history">Loading history...</div>
+                    </div>
+                    <div class="form-group mb-0" style="flex:1;display:flex;flex-direction:column;">
+                        <label class="form-label">Findings</label>
+                        <textarea id="report-findings" placeholder="Begin dictation or typing findings..." style="flex:1;"></textarea>
+                    </div>
+                    <div class="form-group mb-0" style="flex:0.6;display:flex;flex-direction:column;">
+                        <label class="form-label">Impression</label>
+                        <textarea id="report-impression" placeholder="1. Primary impression...&#10;2. Secondary findings..." style="flex:1;"></textarea>
+                    </div>
                 </div>
-                <div>
-                    <label style="font-size:0.8rem;color:#94a3b8;">Findings</label>
-                    <textarea id="report-findings" placeholder="Type findings here..."></textarea>
-                </div>
-                <div>
-                    <label style="font-size:0.8rem;color:#94a3b8;">Impression</label>
-                    <textarea id="report-impression" placeholder="1. Summary impression...&#10;2. Recommendations..."></textarea>
-                </div>
-                <div style="display:flex;gap:8px;margin-top:auto;">
-                    <button class="btn btn-outline" style="flex:1;color:#eee;border-color:#555;" onclick="UI.toast('Draft auto-saved', 'info')">Save Draft</button>
-                    <button class="btn btn-success" style="flex:1;" onclick="finalizeReportFromViewer()">✓ Verify & Sign</button>
+                <div class="viewer-panel-footer">
+                    <button class="btn btn-outline" style="flex:1;color:#eee;border-color:#444;" onclick="UI.toast('Draft saved to RIS', 'info')">Save Draft</button>
+                    <button class="btn btn-success" style="flex:1;" onclick="finalizeReportFromViewer()">✓ Sign Report</button>
                 </div>
             </div>
         </div>
@@ -103,20 +147,20 @@
     <!-- ── Developer / Demo Panel ─────────────────────────── -->
     <div class="dev-panel">
         <div class="dev-panel-header" onclick="toggleDevPanel()">
-            <span>🛠️ Developer Panel</span>
-            <span>▼</span>
+            <span>🛠️ Engine Diagnostics</span>
+            <span>▲▼</span>
         </div>
         <div class="dev-panel-body" id="dev-panel-body">
-            <div id="dev-state-summary" class="text-sm" style="padding:6px 0;border-bottom:1px solid #e2e8f0;margin-bottom:8px;">
+            <div id="dev-state-summary" class="text-xs" style="padding:4px 0;border-bottom:1px solid var(--border-light);margin-bottom:4px;color:var(--text-muted);">
                 Initializing...
             </div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn btn-sm btn-primary" onclick="navigate('scenarios')">Demo Scenarios</button>
-                <button class="btn btn-sm btn-danger" onclick="resetAll()">Reset State</button>
+            <div class="btn-group" style="flex-wrap:wrap;">
+                <button class="btn btn-sm btn-outline" onclick="navigate('scenarios')">Load Scenarios</button>
+                <button class="btn btn-sm btn-outline" onclick="resetAll()">Hard Reset</button>
             </div>
-            <div style="margin-top:8px;">
-                <strong class="text-xs">Activity Log</strong>
-                <div class="dev-log" id="dev-log">No activity yet.</div>
+            <div style="margin-top:4px;">
+                <strong class="text-xs text-muted" style="text-transform:uppercase;letter-spacing:0.5px;">Message Bus Log</strong>
+                <div class="dev-log" id="dev-log" style="margin-top:4px;">No activity yet.</div>
             </div>
         </div>
     </div>
