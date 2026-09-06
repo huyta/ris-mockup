@@ -255,3 +255,6 @@ tr:hover td { background-color: #f1f5f9; }
 .scan-tr { top: 20px; right: 20px; text-align: right; }
 .scan-bl { bottom: 20px; left: 20px; }
 .scan-br { bottom: 20px; right: 20px; text-align: right; }
+
+/* Dev Panel Collapsed State Fix */
+.dev-panel-body.collapsed { display: none; }
