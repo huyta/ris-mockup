@@ -403,9 +403,48 @@ Pages.scheduling = {
           emptyMessage: 'No appointments scheduled.'
         })
       )}
+      ${renderScheduleModal()}
     `;
   }
 };
+
+function renderScheduleModal() {
+  const rooms = typeof MOCK_DATA !== 'undefined' ? MOCK_DATA.rooms : [];
+  const modalities = typeof MOCK_DATA !== 'undefined' ? MOCK_DATA.modalities : [];
+  const techs = typeof MOCK_DATA !== 'undefined' && MOCK_DATA.staff ? MOCK_DATA.staff.technologists : [];
+  
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  return UI.modal('schedule-modal', 'Schedule Appointment', `
+    <input type="hidden" id="sched-order-id" />
+    <div class="form-row">
+      ${UI.formField('sched-date', 'Date', 'date', { required: true, value: tomorrow.toISOString().slice(0, 10) })}
+      ${UI.formField('sched-time', 'Time', 'time', { required: true, value: '10:00' })}
+    </div>
+    <div class="form-group">
+      <label class="form-label">Assign Room</label>
+      <select id="sched-room" class="form-select">
+        ${rooms.map(r => `<option value="${r.id}">${r.name}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Assign Modality</label>
+      <select id="sched-modality" class="form-select">
+        ${modalities.map(m => `<option value="${m.id}">${m.name} (${m.manufacturer})</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Assign Technologist</label>
+      <select id="sched-tech" class="form-select">
+        ${techs.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}
+      </select>
+    </div>
+  `, `
+    <button class="btn btn-outline" onclick="UI.closeModal('schedule-modal')">Cancel</button>
+    <button class="btn btn-primary" onclick="Actions.confirmSchedule()">Confirm Schedule</button>
+  `);
+}
 
 // ─── Technologist Worklist (MWL) ───────────────────────────────
 Pages['tech-worklist'] = {
@@ -855,30 +894,60 @@ const Actions = {
   scheduleOrder(orderId) {
     const order = AppState.getById('orders', orderId);
     if (!order) return;
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const dateStr = tomorrow.toISOString().slice(0, 10);
+    
+    // Set order ID in the modal
+    const input = document.getElementById('sched-order-id');
+    if (input) input.value = orderId;
+    
+    UI.openModal('schedule-modal');
+  },
+
+  confirmSchedule() {
+    const orderId = document.getElementById('sched-order-id')?.value;
+    const dateStr = document.getElementById('sched-date')?.value;
+    const timeStr = document.getElementById('sched-time')?.value;
+    const roomId = document.getElementById('sched-room')?.value;
+    const modalityId = document.getElementById('sched-modality')?.value;
+    const techId = document.getElementById('sched-tech')?.value;
+
+    if (!orderId || !dateStr || !timeStr) {
+      UI.toast('Please fill out all required fields.', 'error');
+      return;
+    }
+
+    const order = AppState.getById('orders', orderId);
+    if (!order) return;
+
     AppState.updateById('orders', orderId, {
       status: 'Scheduled',
       scheduledDate: dateStr,
-      scheduledTime: '10:00',
-      roomId: 'ROOM-001',
-      modalityId: 'MOD-001',
-      assignedTech: 'TECH-001'
+      scheduledTime: timeStr,
+      roomId: roomId,
+      modalityId: modalityId,
+      assignedTech: techId
     });
+
+    // Simple offset for end time based on typical 45min procedure
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const endTotalMinutes = hours * 60 + minutes + 45;
+    const endHours = String(Math.floor(endTotalMinutes / 60) % 24).padStart(2, '0');
+    const endMins = String(endTotalMinutes % 60).padStart(2, '0');
+    const endTimeStr = `${endHours}:${endMins}`;
+
     AppState.addTo('appointments', {
       id: generateId('APT'),
       orderId,
       patientId: order.patientId,
       date: dateStr,
-      startTime: '10:00',
-      endTime: '10:45',
-      roomId: 'ROOM-001',
-      modalityId: 'MOD-001',
-      techId: 'TECH-001',
+      startTime: timeStr,
+      endTime: endTimeStr,
+      roomId: roomId,
+      modalityId: modalityId,
+      techId: techId,
       status: 'Confirmed',
       duration: 45
     });
+
     AppState.addTo('statusHistory', {
       id: generateId('SH'),
       entityType: 'Order',
@@ -887,9 +956,11 @@ const Actions = {
       toStatus: 'Scheduled',
       changedBy: 'Coordinator',
       changedAt: new Date().toISOString(),
-      reason: 'Appointment scheduled'
+      reason: 'Appointment manually scheduled'
     });
-    AppState.log(`Order ${order.accession} scheduled for ${dateStr} 10:00`, 'schedule');
+
+    AppState.log(`Order ${order.accession} scheduled for ${dateStr} ${timeStr}`, 'schedule');
+    UI.closeModal('schedule-modal');
     UI.toast('Order scheduled!', 'success');
     Router.render();
   },
