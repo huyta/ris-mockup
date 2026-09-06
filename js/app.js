@@ -33,7 +33,16 @@ const Router = {
 
     titleEl.textContent = page.title || this.current;
     if (breadcrumbEl) breadcrumbEl.innerHTML = page.breadcrumbs ? UI.breadcrumbs(page.breadcrumbs()) : '';
-    container.innerHTML = page.render(this.params);
+    
+    let rendered = page.render(this.params);
+    if (this.current === 'patient-detail') updateGlobalPatientBanner(this.params.id);
+    else if (this.current === 'order-detail') { 
+        const ord = AppState.getById('orders', this.params.id); 
+        updateGlobalPatientBanner(ord ? ord.patientId : null); 
+    }
+    else updateGlobalPatientBanner(null);
+    container.innerHTML = rendered;
+
     if (page.afterRender) page.afterRender(this.params);
 
     AppState.set('currentView', this.current);
@@ -87,7 +96,7 @@ Pages.dashboard = {
             `).join('')}
         </div>
       `)}
-      <div class="grid-2">
+      <div class=\"detail-grid\">
         ${UI.card('Quick Actions', `
           <div class="btn-group" style="flex-wrap:wrap;">
             <button class="btn btn-primary" onclick="navigate('orders', {action:'create'})">+ New Order</button>
@@ -150,7 +159,7 @@ Pages.patients = {
       `, `
         <button class="btn btn-outline" onclick="UI.closeModal('add-patient')">Cancel</button>
         <button class="btn btn-primary" onclick="Actions.addPatient()">Register Patient</button>
-      `)}
+      `, 'modal-lg')}
     `;
   }
 };
@@ -443,7 +452,7 @@ function renderScheduleModal() {
   `, `
     <button class="btn btn-outline" onclick="UI.closeModal('schedule-modal')">Cancel</button>
     <button class="btn btn-primary" onclick="Actions.confirmSchedule()">Confirm Schedule</button>
-  `);
+  `, 'modal-lg');
 }
 
 // ─── Technologist Worklist (MWL) ───────────────────────────────
@@ -1269,3 +1278,30 @@ document.addEventListener('DOMContentLoaded', () => {
   navigate('dashboard');
   updateDevPanel();
 });
+
+
+function updateGlobalPatientBanner(patientId) {
+  const banner = document.getElementById('global-patient-banner');
+  if (!banner) return;
+  if (!patientId) {
+    banner.classList.remove('active');
+    return;
+  }
+  const pt = AppState.getById('patients', patientId);
+  if (!pt) {
+    banner.classList.remove('active');
+    return;
+  }
+  banner.classList.add('active');
+  document.getElementById('pt-banner-name').textContent = pt.name;
+  document.getElementById('pt-banner-mrn').textContent = 'MRN: ' + pt.mrn;
+  document.getElementById('pt-banner-dob').textContent = `DOB: ${pt.dob} (${pt.sex})`;
+  
+  const alertEl = document.getElementById('pt-banner-alert');
+  if (pt.allergies && pt.allergies.toLowerCase() !== 'none known' && pt.allergies !== 'None') {
+      alertEl.innerHTML = `⚠️ Allergies: ${pt.allergies}`;
+      alertEl.style.display = 'flex';
+  } else {
+      alertEl.style.display = 'none';
+  }
+}
