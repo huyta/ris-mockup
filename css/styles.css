@@ -245,3 +245,7 @@ tr:hover td { background-color: #f1f5f9; }
 
 /* Force table to respect column widths */
 .table-container table { min-width: max-content; }
+
+/* Explicit Input Height Fix */
+.form-input, .form-select { height: 40px; }
+.form-textarea { min-height: 100px; padding-top: 10px; padding-bottom: 10px; }
