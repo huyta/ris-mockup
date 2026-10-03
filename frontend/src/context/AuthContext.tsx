@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { PortalUser } from '../types/portal';
-import { DEFAULT_DOCTOR_USER, DEFAULT_PATIENT_USER, MOCK_USERS } from '../mock/users';
 import { portalService } from '../services/portalService';
 import { useNavigation } from './NavigationContext';
 
@@ -10,6 +9,7 @@ interface AuthContextType {
   isLoading: boolean;
   loginAsPatient: (patientId?: string) => Promise<void>;
   loginAsDoctor: (doctorId?: string) => Promise<void>;
+  loginWithCredentials: (username: string, password: string) => Promise<void>;
   switchUser: (user: PortalUser) => Promise<void>;
   logout: () => Promise<void>;
   isPatient: boolean;
@@ -19,16 +19,58 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<PortalUser | null>(DEFAULT_PATIENT_USER);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<PortalUser | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const { navigate, currentPath } = useNavigation();
 
+  // Restore session from JWT token on mount
   useEffect(() => {
-    // If not authenticated and not on login, redirect to /login
-    if (!currentUser && currentPath !== '/login') {
-      navigate('/login');
+    let isMounted = true;
+    portalService
+      .getCurrentUser()
+      .then((user) => {
+        if (!isMounted) return;
+        if (user) {
+          setCurrentUser(user);
+        } else {
+          // If no active session, auto-login default demo user (John Tan) if not on /login
+          portalService.loginAsPatient().then((demoUser) => {
+            if (isMounted) setCurrentUser(demoUser);
+          }).catch(() => {
+            if (isMounted && currentPath !== '/login') {
+              navigate('/login');
+            }
+          });
+        }
+      })
+      .catch(() => {
+        if (isMounted && currentPath !== '/login') {
+          navigate('/login');
+        }
+      })
+      .finally(() => {
+        if (isMounted) setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const loginWithCredentials = async (username: string, password: string) => {
+    setIsLoading(true);
+    try {
+      const user = await portalService.loginWithCredentials(username, password);
+      setCurrentUser(user);
+      if (user.role === 'PATIENT') {
+        navigate('/patient');
+      } else {
+        navigate('/doctor');
+      }
+    } finally {
+      setIsLoading(false);
     }
-  }, [currentUser, currentPath, navigate]);
+  };
 
   const loginAsPatient = async (patientId: string = 'P00010001') => {
     setIsLoading(true);
@@ -55,12 +97,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const switchUser = async (user: PortalUser) => {
     setIsLoading(true);
     try {
-      await portalService.login(user);
-      setCurrentUser(user);
       if (user.role === 'PATIENT') {
-        navigate('/patient');
+        await loginAsPatient(user.patientId);
       } else {
-        navigate('/doctor');
+        await loginAsDoctor(user.doctorId);
       }
     } finally {
       setIsLoading(false);
@@ -89,6 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         loginAsPatient,
         loginAsDoctor,
+        loginWithCredentials,
         switchUser,
         logout,
         isPatient,

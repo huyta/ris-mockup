@@ -26,3 +26,20 @@ dist-ssr
 # Screenshots / artifacts
 screenshot1.png
 screenshot2.png
+
+# Python / Backend
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.db
+*.sqlite3
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+.env
+

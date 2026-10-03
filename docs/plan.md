@@ -203,7 +203,7 @@ Desktop:
 │              │ Password               │                      │
 │              └────────────────────────┘                      │
 │                                                              │
-│              ☑ Remember me                                 │
+│              ☑ Remember me                                   │
 │                                                              │
 │              [        Sign In        ]                       │
 │                                                              │

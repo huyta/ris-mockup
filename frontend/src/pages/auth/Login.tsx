@@ -14,19 +14,23 @@ import {
 } from 'lucide-react';
 
 export const Login: React.FC = () => {
-  const { loginAsPatient, loginAsDoctor, switchUser, isLoading } = useAuth();
-  const [email, setEmail] = useState('john.tan@example.com');
-  const [password, setPassword] = useState('••••••••••••');
+  const { loginAsPatient, loginAsDoctor, loginWithCredentials, switchUser, isLoading } = useAuth();
+  const [email, setEmail] = useState('john.tan');
+  const [password, setPassword] = useState('demo123');
   const [rememberMe, setRememberMe] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.includes('doctor') || email.includes('orthocare') || email.includes('lim')) {
-      loginAsDoctor('D00021');
-    } else {
-      loginAsPatient('P00010001');
+    setErrorMessage(null);
+    try {
+      const username = email.includes('@') ? email.split('@')[0] : email;
+      await loginWithCredentials(username, password || 'demo123');
+    } catch (err: any) {
+      setErrorMessage(err?.detail || err?.message || 'Invalid username or password');
     }
   };
+
 
   return (
     <div
@@ -247,7 +251,26 @@ export const Login: React.FC = () => {
           </div>
 
           {/* Manual Credentials Form */}
+          {errorMessage && (
+            <div
+              style={{
+                backgroundColor: '#fef2f2',
+                border: '1px solid #fecaca',
+                borderRadius: '8px',
+                padding: '0.75rem 1rem',
+                color: '#b91c1c',
+                fontSize: '0.82rem',
+                marginBottom: '1rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              <span>{errorMessage}</span>
+            </div>
+          )}
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+
             <div className="form-group">
               <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <Mail size={14} />

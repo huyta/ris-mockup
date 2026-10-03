@@ -1,0 +1,37 @@
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: smg-radiology-api
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_NAME=SMG Radiology API
+      - ENVIRONMENT=development
+      - DATABASE_URL=sqlite:///./smg_radiology.db
+      - JWT_SECRET_KEY=smg-super-secret-jwt-key-radiology-portal-2026
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:3000,http://localhost,http://127.0.0.1:5173
+    volumes:
+      - ./backend/smg_radiology.db:/app/smg_radiology.db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=http://localhost:8000/api/v1
+    container_name: smg-radiology-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
